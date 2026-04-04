@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Yapay Zihin Niş",
+  "version": "1.0.0",
+  "description": "AI odaklı hızlı büyüyen YouTube kanallarını keşfedin — Faceless niş analiz aracı.",
+  "permissions": [
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.googleapis.com/*"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Yapay Zihin Niş",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

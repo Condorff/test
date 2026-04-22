@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Beyblade Battle Arena — Overlay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #00b4ff;
+      --red:  #ff3333;
+      --gold: #ffd700;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Orbitron', monospace;
+    }
+
+    /* ─────────── TOP HUD ─────────── */
+    .top-hud {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 118px;
+      background: linear-gradient(180deg,
+        rgba(0,3,12,0.97) 0%,
+        rgba(0,3,12,0.90) 72%,
+        transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 26px 22px;
+      z-index: 100;
+    }
+
+    /* LIVE badge */
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      background: rgba(0,0,0,0.72);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 9px;
+      padding: 10px 22px;
+      backdrop-filter: blur(4px);
+      min-width: 130px;
+    }
+
+    .live-dot {
+      width: 14px; height: 14px;
+      background: #ff2020;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ff0000, 0 0 18px #ff000066;
+      animation: live-blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes live-blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.35; }
+    }
+
+    .live-label {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* Center score */
+    .score-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .vs-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .p1-label {
+      font-size: 40px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--blue);
+      letter-spacing: 3px;
+      text-shadow: 0 0 14px rgba(0,180,255,0.75), 0 0 34px rgba(0,180,255,0.35);
+      min-width: 220px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .score-box {
+      background: rgba(0,0,0,0.62);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 7px;
+      padding: 4px 30px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .score-num {
+      font-size: 56px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      min-width: 42px;
+      text-align: center;
+    }
+
+    .score-sep {
+      font-size: 40px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.38);
+    }
+
+    .p2-label {
+      font-size: 40px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--red);
+      letter-spacing: 3px;
+      text-shadow: 0 0 14px rgba(255,51,51,0.75), 0 0 34px rgba(255,51,51,0.35);
+      min-width: 220px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .round-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: rgba(200,215,235,0.8);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 5px 24px;
+    }
+
+    /* Right buttons */
+    .hud-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 220px;
+      align-items: flex-end;
+    }
+
+    .hud-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(0,0,0,0.68);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 6px;
+      padding: 7px 16px;
+      color: rgba(200,215,235,0.65);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+    }
+
+    .hud-btn.on {
+      border-color: rgba(0,224,128,0.55);
+      color: #00e080;
+    }
+
+    .hud-btn-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ─────────── LIKE & SUBSCRIBE ─────────── */
+    .like-sub-zone {
+      position: fixed;
+      bottom: 52px;
+      left: 0; right: 0;
+      height: 92px;
+      z-index: 90;
+      overflow: hidden;
+    }
+
+    .ls-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,3,14,0.82);
+      backdrop-filter: blur(4px);
+    }
+
+    .ls-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+    }
+
+    .ls-line.top { top: 0; }
+    .ls-line.bot { bottom: 0; }
+
+    .ls-line::before {
+      content: '';
+      display: block;
+      height: 100%;
+      background: linear-gradient(to right,
+        transparent 0%,
+        rgba(0,180,255,0.45) 15%,
+        rgba(160,0,255,0.65) 35%,
+        rgba(255,50,255,0.65) 50%,
+        rgba(160,0,255,0.65) 65%,
+        rgba(0,180,255,0.45) 85%,
+        transparent 100%);
+      animation: line-slide 6s linear infinite;
+    }
+
+    .ls-line.bot::before { animation-direction: reverse; }
+
+    @keyframes line-slide {
+      0%   { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .ls-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .ls-bell {
+      font-size: 40px;
+      display: inline-block;
+      filter: drop-shadow(0 0 10px rgba(255,220,50,0.85));
+      animation: bell-swing 2.8s ease-in-out infinite;
+      transform-origin: top center;
+    }
+
+    .ls-bell.delay { animation-delay: -1.4s; }
+
+    @keyframes bell-swing {
+      0%, 100% { transform: rotate(0deg); }
+      12%       { transform: rotate(18deg); }
+      26%       { transform: rotate(-18deg); }
+      40%       { transform: rotate(10deg); }
+      55%       { transform: rotate(-10deg); }
+      70%       { transform: rotate(0deg); }
+    }
+
+    .ls-divider {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.22), transparent);
+    }
+
+    .ls-text {
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      white-space: nowrap;
+      animation: neon-hue 4s linear infinite;
+    }
+
+    @keyframes neon-hue {
+      0%   { color:#ff00ff; text-shadow:0 0 8px #ff00ff,0 0 24px #ff00ff,0 0 50px #ff00ff80; }
+      16%  { color:#ff6600; text-shadow:0 0 8px #ff6600,0 0 24px #ff6600,0 0 50px #ff660080; }
+      33%  { color:#ffe600; text-shadow:0 0 8px #ffe600,0 0 24px #ffe600,0 0 50px #ffe60080; }
+      50%  { color:#00ff88; text-shadow:0 0 8px #00ff88,0 0 24px #00ff88,0 0 50px #00ff8880; }
+      66%  { color:#00ccff; text-shadow:0 0 8px #00ccff,0 0 24px #00ccff,0 0 50px #00ccff80; }
+      83%  { color:#bb00ff; text-shadow:0 0 8px #bb00ff,0 0 24px #bb00ff,0 0 50px #bb00ff80; }
+      100% { color:#ff00ff; text-shadow:0 0 8px #ff00ff,0 0 24px #ff00ff,0 0 50px #ff00ff80; }
+    }
+
+    .ls-sub-row {
+      position: absolute;
+      bottom: 6px;
+      left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .ls-icon-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 3px 16px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .ls-icon-btn.like-btn {
+      background: rgba(0,180,255,0.12);
+      border: 1px solid rgba(0,180,255,0.35);
+      color: var(--blue);
+    }
+
+    .ls-icon-btn.sub-btn {
+      background: rgba(255,50,50,0.12);
+      border: 1px solid rgba(255,50,50,0.35);
+      color: var(--red);
+    }
+
+    /* ─────────── BOTTOM BAR ─────────── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 52px;
+      background: rgba(0,3,14,0.97);
+      border-top: 1px solid rgba(0,180,255,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      z-index: 100;
+    }
+
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(215,228,245,0.85);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .timer-ico { color: rgba(215,228,245,0.42); font-size: 20px; }
+
+    .brand {
+      display: flex;
+      gap: 9px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .brand .a { color: var(--blue); }
+    .brand .b { color: var(--red); }
+    .brand .c { color: #fff; }
+
+    .bar-stats {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: rgba(215,228,245,0.82);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .bar-stats .sep { color: rgba(215,228,245,0.22); font-size: 20px; }
+
+    .stat { display: flex; align-items: center; gap: 7px; }
+    .stat-ico { color: rgba(215,228,245,0.42); font-size: 18px; }
+
+    /* ─────────── EDGE ACCENTS ─────────── */
+    .edge-accent {
+      position: fixed;
+      top: 118px;
+      width: 3px;
+      bottom: 144px;
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .edge-accent.left  { left: 0;  background: linear-gradient(to bottom, var(--blue), transparent 80%); }
+    .edge-accent.right { right: 0; background: linear-gradient(to bottom, var(--red),  transparent 80%); }
+  </style>
+</head>
+<body>
+
+  <!-- Edge accent lines -->
+  <div class="edge-accent left"></div>
+  <div class="edge-accent right"></div>
+
+  <!-- TOP HUD -->
+  <div class="top-hud">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span class="live-label">LIVE</span>
+    </div>
+
+    <div class="score-section">
+      <div class="vs-row">
+        <span class="p1-label" id="p1name">MESSI</span>
+        <div class="score-box">
+          <span class="score-num" id="sc1">2</span>
+          <span class="score-sep">−</span>
+          <span class="score-num" id="sc2">1</span>
+        </div>
+        <span class="p2-label" id="p2name">RONALDO</span>
+      </div>
+      <div class="round-badge" id="rnd">ROUND 4</div>
+    </div>
+
+    <div class="hud-buttons">
+      <div class="hud-btn" id="btn-commentary">
+        <div class="hud-btn-dot"></div>
+        <span id="btn-commentary-text">NO COMMENTARY</span>
+      </div>
+      <div class="hud-btn on" id="btn-rgb">
+        <div class="hud-btn-dot"></div>
+        <span id="btn-rgb-text">SOUND + RGB FOCUS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIKE & SUBSCRIBE -->
+  <div class="like-sub-zone">
+    <div class="ls-bg"></div>
+    <div class="ls-line top"></div>
+    <div class="ls-line bot"></div>
+
+    <div class="ls-inner">
+      <span class="ls-bell">🔔</span>
+      <div class="ls-divider"></div>
+      <span class="ls-text" id="ls-text">LIKE &amp; SUBSCRIBE</span>
+      <div class="ls-divider"></div>
+      <span class="ls-bell delay">🔔</span>
+    </div>
+
+    <div class="ls-sub-row">
+      <div class="ls-icon-btn like-btn">👍 BEĞENİ</div>
+      <div class="ls-icon-btn sub-btn">🔴 ABONE OL</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div class="timer-wrap">
+      <span class="timer-ico">⏱</span>
+      <span id="timer">06:39</span>
+    </div>
+    <div class="brand">
+      <span class="a">BEYBLADE</span>
+      <span class="b">BATTLE</span>
+      <span class="c">ARENA</span>
+    </div>
+    <div class="bar-stats">
+      <div class="stat">
+        <span class="stat-ico">👥</span>
+        <span id="viewers">2.9B</span>
+      </div>
+      <span class="sep">|</span>
+      <div class="stat">
+        <span class="stat-ico">👍</span>
+        <span id="likes">4.7B</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ch = new BroadcastChannel('bba-ctrl');
+
+    ch.addEventListener('message', ({ data }) => apply(data));
+
+    // Also poll localStorage every 400ms as fallback (for OBS browser source)
+    setInterval(() => {
+      const raw = localStorage.getItem('bba-state');
+      if (raw) {
+        try { apply(JSON.parse(raw)); } catch {}
+      }
+    }, 400);
+
+    // Load initial state
+    const raw = localStorage.getItem('bba-state');
+    if (raw) { try { apply(JSON.parse(raw)); } catch {} }
+
+    function apply(d) {
+      if (d.p1 != null)      document.getElementById('p1name').textContent   = d.p1;
+      if (d.p2 != null)      document.getElementById('p2name').textContent   = d.p2;
+      if (d.s1 != null)      document.getElementById('sc1').textContent      = d.s1;
+      if (d.s2 != null)      document.getElementById('sc2').textContent      = d.s2;
+      if (d.round != null)   document.getElementById('rnd').textContent      = 'ROUND ' + d.round;
+      if (d.timer != null)   document.getElementById('timer').textContent    = d.timer;
+      if (d.viewers != null) document.getElementById('viewers').textContent  = d.viewers;
+      if (d.likes != null)   document.getElementById('likes').textContent    = d.likes;
+      if (d.lsText != null)  document.getElementById('ls-text').innerHTML    = d.lsText;
+      if (d.commentary != null) {
+        const btn = document.getElementById('btn-commentary');
+        btn.querySelector('#btn-commentary-text').textContent = d.commentary;
+        btn.classList.toggle('on', d.commentaryOn);
+      }
+    }
+  </script>
+</body>
+</html>

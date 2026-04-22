@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Panel — Beyblade Battle Arena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue:       #00b4ff;
+      --blue-dim:   rgba(0,180,255,0.13);
+      --blue-bd:    rgba(0,180,255,0.42);
+      --red:        #ff3333;
+      --red-dim:    rgba(255,51,51,0.13);
+      --red-bd:     rgba(255,51,51,0.42);
+      --gold:       #ffd700;
+      --green:      #00e080;
+      --bg:         #030810;
+      --bg2:        #060d1a;
+      --bg3:        #0b1628;
+      --text:       #c8d8f0;
+      --text-dim:   rgba(200,216,240,0.48);
+      --border:     rgba(255,255,255,0.08);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Orbitron', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--blue-bd);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .logo {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logo-row {
+      display: flex;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .logo .a { color: var(--blue); }
+    .logo .b { color: var(--red); }
+    .logo .c { color: #fff; }
+
+    .logo-sub {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: var(--text-dim);
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 22px;
+      border-radius: 24px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .live-pill.live {
+      background: rgba(255,30,30,0.12);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .live-pill.offline {
+      background: rgba(100,100,100,0.1);
+      border-color: rgba(200,200,200,0.25);
+      color: rgba(200,200,200,0.5);
+    }
+
+    .pill-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .live-pill.live .pill-dot { animation: blink 1.4s ease-in-out infinite; }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ─── MAIN ─── */
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 22px 22px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ─── PANELS ─── */
+    .panel {
+      background: var(--bg2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 20px 22px;
+    }
+
+    .panel.p1 { border-color: var(--blue-bd); }
+    .panel.p2 { border-color: var(--red-bd); }
+
+    .panel-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      color: var(--text-dim);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panel-title span { flex-shrink: 0; }
+    .panel-title::after { content:''; flex:1; height:1px; background:var(--border); }
+    .panel.p1 .panel-title { color: var(--blue); }
+    .panel.p2 .panel-title { color: var(--red); }
+
+    /* ─── PLAYERS ROW ─── */
+    .players-row {
+      display: grid;
+      grid-template-columns: 1fr 200px 1fr;
+      gap: 16px;
+    }
+
+    .center-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Name input */
+    .name-input {
+      width: 100%;
+      background: rgba(0,0,0,0.38);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 12px 16px;
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .p1 .name-input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(0,180,255,0.15); }
+    .p2 .name-input:focus { border-color: var(--red);  box-shadow: 0 0 0 2px rgba(255,51,51,0.15); }
+
+    /* Score */
+    .score-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .score-ctrl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .score-btn {
+      width: 66px; height: 66px;
+      border-radius: 8px;
+      border: 1px solid;
+      background: rgba(0,0,0,0.28);
+      font-family: 'Orbitron', monospace;
+      font-size: 30px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: all 0.14s;
+      flex-shrink: 0;
+    }
+
+    .p1 .score-btn { color: var(--blue); border-color: var(--blue-bd); }
+    .p1 .score-btn:hover { background: var(--blue-dim); box-shadow: 0 0 14px rgba(0,180,255,0.22); }
+    .p1 .score-btn:active { transform: scale(0.91); }
+
+    .p2 .score-btn { color: var(--red); border-color: var(--red-bd); }
+    .p2 .score-btn:hover { background: var(--red-dim); box-shadow: 0 0 14px rgba(255,51,51,0.22); }
+    .p2 .score-btn:active { transform: scale(0.91); }
+
+    .score-val {
+      font-size: 68px;
+      font-weight: 900;
+      min-width: 80px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .p1 .score-val { color: var(--blue); text-shadow: 0 0 20px rgba(0,180,255,0.45); }
+    .p2 .score-val { color: var(--red);  text-shadow: 0 0 20px rgba(255,51,51,0.45); }
+
+    /* Center VS panel */
+    .vs-panel {
+      background: var(--bg2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .vs-big {
+      font-size: 30px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 4px;
+    }
+
+    .round-lbl {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .round-ctrl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .round-btn {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.28);
+      color: var(--text);
+      font-family: 'Orbitron', monospace;
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.14s;
+    }
+
+    .round-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.22); }
+    .round-btn:active { transform: scale(0.9); }
+
+    .round-val {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 2px;
+      min-width: 64px;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(255,215,0,0.4);
+    }
+
+    .reset-scores-btn {
+      width: 100%;
+      padding: 9px;
+      background: rgba(255,50,50,0.07);
+      border: 1px solid rgba(255,50,50,0.22);
+      border-radius: 7px;
+      color: rgba(255,100,100,0.65);
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .reset-scores-btn:hover {
+      background: rgba(255,50,50,0.14);
+      color: rgba(255,110,110,0.95);
+    }
+
+    /* ─── BOTTOM ROW ─── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Timer */
+    .timer-big {
+      font-size: 52px;
+      font-weight: 900;
+      text-align: center;
+      color: #fff;
+      letter-spacing: 5px;
+      margin: 6px 0 10px;
+      text-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .timer-set-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .timer-set-input {
+      width: 130px;
+      background: rgba(0,0,0,0.38);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 4px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .timer-set-input:focus { border-color: var(--gold); }
+
+    .timer-set-btn {
+      padding: 8px 16px;
+      background: rgba(255,215,0,0.1);
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 6px;
+      color: var(--gold);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.14s;
+    }
+
+    .timer-set-btn:hover { background: rgba(255,215,0,0.18); }
+
+    .mode-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn {
+      padding: 5px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mode-btn.active {
+      background: var(--blue-dim);
+      border-color: var(--blue-bd);
+      color: var(--blue);
+    }
+
+    .timer-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .t-btn {
+      padding: 10px 18px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.28);
+      color: var(--text);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.14s;
+    }
+
+    .t-btn:hover { background: rgba(255,255,255,0.06); }
+    .t-btn:active { transform: scale(0.93); }
+
+    .t-btn.start {
+      border-color: rgba(0,224,128,0.5);
+      color: var(--green);
+    }
+
+    .t-btn.start:hover { background: rgba(0,224,128,0.1); }
+
+    .t-btn.stop {
+      border-color: rgba(255,80,80,0.45);
+      color: rgba(255,100,100,0.8);
+    }
+
+    .t-btn.stop:hover { background: rgba(255,50,50,0.1); }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .stat-group label {
+      display: block;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      margin-bottom: 7px;
+    }
+
+    .stat-input {
+      width: 100%;
+      background: rgba(0,0,0,0.38);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'Orbitron', monospace;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 2px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .stat-input:focus { border-color: var(--gold); }
+
+    /* Like & Subscribe text editor */
+    .ls-editor-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .ls-text-input {
+      flex: 1;
+      background: rgba(0,0,0,0.38);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 3px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .ls-text-input:focus { border-color: #ff00ff; box-shadow: 0 0 0 2px rgba(255,0,255,0.1); }
+
+    /* Keyboard hints */
+    .hints {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      padding: 14px 0 4px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 16px;
+    }
+
+    .hints .hint-item { display: flex; align-items: center; gap: 5px; }
+
+    kbd {
+      display: inline-block;
+      padding: 2px 7px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+    }
+
+    /* Status toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      padding: 10px 22px;
+      background: rgba(0,224,128,0.15);
+      border: 1px solid rgba(0,224,128,0.4);
+      border-radius: 8px;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .toast.show { opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-row">
+        <span class="a">BEYBLADE</span>
+        <span class="b">BATTLE</span>
+        <span class="c">ARENA</span>
+      </div>
+      <div class="logo-sub">CONTROL PANEL — CANLI YAYIN</div>
+    </div>
+    <div class="live-pill live" id="live-pill" onclick="toggleLive()">
+      <div class="pill-dot"></div>
+      <span id="live-pill-label">YAYIN AÇIK</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PLAYERS ROW -->
+    <div class="players-row">
+
+      <!-- PLAYER 1 -->
+      <div class="panel p1">
+        <div class="panel-title"><span>PLAYER 1</span></div>
+        <input class="name-input" id="p1-name" value="MESSI"   placeholder="OYUNCU 1 ADI"  oninput="broadcast()">
+        <div class="score-lbl">SKOR</div>
+        <div class="score-ctrl">
+          <button class="score-btn" onclick="changeScore(1,-1)">−</button>
+          <span  class="score-val"  id="s1-val">2</span>
+          <button class="score-btn" onclick="changeScore(1, 1)">+</button>
+        </div>
+      </div>
+
+      <!-- CENTER -->
+      <div class="center-col">
+        <div class="vs-panel">
+          <div class="vs-big">VS</div>
+          <div>
+            <div class="round-lbl">TUR / ROUND</div>
+            <div class="round-ctrl">
+              <button class="round-btn" onclick="changeRound(-1)">−</button>
+              <span  class="round-val" id="round-val">4</span>
+              <button class="round-btn" onclick="changeRound( 1)">+</button>
+            </div>
+          </div>
+        </div>
+        <button class="reset-scores-btn" onclick="resetScores()">↺ SKORLARI SIFIRLA</button>
+      </div>
+
+      <!-- PLAYER 2 -->
+      <div class="panel p2">
+        <div class="panel-title"><span>PLAYER 2</span></div>
+        <input class="name-input" id="p2-name" value="RONALDO" placeholder="OYUNCU 2 ADI" oninput="broadcast()">
+        <div class="score-lbl">SKOR</div>
+        <div class="score-ctrl">
+          <button class="score-btn" onclick="changeScore(2,-1)">−</button>
+          <span  class="score-val"  id="s2-val">1</span>
+          <button class="score-btn" onclick="changeScore(2, 1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+
+      <!-- TIMER -->
+      <div class="panel">
+        <div class="panel-title"><span>SAYAÇ</span></div>
+        <div class="timer-big" id="timer-big">06:39</div>
+
+        <div class="timer-set-row">
+          <input class="timer-set-input" id="timer-set" value="06:39" placeholder="MM:SS">
+          <button class="timer-set-btn" onclick="setTimerFromInput()">AYARLA</button>
+        </div>
+
+        <div class="mode-row">
+          <button class="mode-btn active" id="mode-down" onclick="setMode('down')">▼ GERİ SAYIM</button>
+          <button class="mode-btn"        id="mode-up"   onclick="setMode('up')"  >▲ İLERİ SAYIM</button>
+        </div>
+
+        <div class="timer-btns">
+          <button class="t-btn start" onclick="startTimer()">▶ BAŞLAT</button>
+          <button class="t-btn stop"  onclick="stopTimer()">■ DURDUR</button>
+          <button class="t-btn"       onclick="resetTimer()">↺ SIFIRLA</button>
+        </div>
+      </div>
+
+      <!-- STATS & EXTRA -->
+      <div class="panel" style="display:flex;flex-direction:column;gap:18px;">
+        <div>
+          <div class="panel-title"><span>YAYIN İSTATİSTİKLERİ</span></div>
+          <div class="stats-grid">
+            <div class="stat-group">
+              <label>👥 İZLEYİCİ</label>
+              <input class="stat-input" id="viewers" value="2.9B" oninput="broadcast()">
+            </div>
+            <div class="stat-group">
+              <label>👍 BEĞENİ</label>
+              <input class="stat-input" id="likes"   value="4.7B" oninput="broadcast()">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel-title"><span>LIKE &amp; SUBSCRIBE YAZISI</span></div>
+          <div class="ls-editor-row">
+            <input class="ls-text-input" id="ls-input" value="LIKE &amp; SUBSCRIBE" oninput="broadcast()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYBOARD HINTS -->
+    <div class="hints">
+      <div class="hint-item"><kbd>Q</kbd> P1 −</div>
+      <div class="hint-item"><kbd>W</kbd> P1 +</div>
+      <div class="hint-item"><kbd>O</kbd> P2 −</div>
+      <div class="hint-item"><kbd>P</kbd> P2 +</div>
+      <div class="hint-item"><kbd>SPACE</kbd> Sayaç Başlat / Durdur</div>
+      <div class="hint-item"><kbd>[</kbd> Tur −</div>
+      <div class="hint-item"><kbd>]</kbd> Tur +</div>
+    </div>
+
+  </main>
+
+  <div class="toast" id="toast">GÖNDERILDI ✓</div>
+
+  <script>
+    const ch = new BroadcastChannel('bba-ctrl');
+
+    // ── State ──
+    let s1 = 2, s2 = 1, round = 4;
+    let timerSec = 6 * 60 + 39;
+    let timerRunning = false;
+    let timerInterval = null;
+    let timerMode = 'down';
+    let isLive = true;
+
+    // ── Broadcast ──
+    function broadcast() {
+      const data = {
+        p1:      document.getElementById('p1-name').value.toUpperCase(),
+        p2:      document.getElementById('p2-name').value.toUpperCase(),
+        s1, s2, round,
+        timer:   fmt(timerSec),
+        viewers: document.getElementById('viewers').value,
+        likes:   document.getElementById('likes').value,
+        lsText:  document.getElementById('ls-input').value,
+      };
+      ch.postMessage(data);
+      localStorage.setItem('bba-state', JSON.stringify(data));
+      flashToast();
+    }
+
+    let toastTimeout;
+    function flashToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => t.classList.remove('show'), 900);
+    }
+
+    // ── Score ──
+    function changeScore(player, delta) {
+      if (player === 1) s1 = Math.max(0, s1 + delta);
+      else              s2 = Math.max(0, s2 + delta);
+      document.getElementById('s1-val').textContent = s1;
+      document.getElementById('s2-val').textContent = s2;
+      broadcast();
+    }
+
+    function resetScores() {
+      s1 = 0; s2 = 0;
+      document.getElementById('s1-val').textContent = 0;
+      document.getElementById('s2-val').textContent = 0;
+      broadcast();
+    }
+
+    // ── Round ──
+    function changeRound(delta) {
+      round = Math.max(1, round + delta);
+      document.getElementById('round-val').textContent = round;
+      broadcast();
+    }
+
+    // ── Timer ──
+    function setMode(mode) {
+      timerMode = mode;
+      document.getElementById('mode-down').classList.toggle('active', mode === 'down');
+      document.getElementById('mode-up').classList.toggle('active',   mode === 'up');
+    }
+
+    function startTimer() {
+      if (timerRunning) return;
+      timerRunning = true;
+      timerInterval = setInterval(() => {
+        if (timerMode === 'down') {
+          timerSec = Math.max(0, timerSec - 1);
+          if (timerSec === 0) stopTimer();
+        } else {
+          timerSec++;
+        }
+        refreshTimerUI();
+        broadcast();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      timerRunning = false;
+      clearInterval(timerInterval);
+    }
+
+    function resetTimer() {
+      stopTimer();
+      timerSec = 0;
+      refreshTimerUI();
+      broadcast();
+    }
+
+    function setTimerFromInput() {
+      const raw = document.getElementById('timer-set').value.trim();
+      const parts = raw.split(':');
+      if (parts.length === 2) {
+        const m = parseInt(parts[0]) || 0;
+        const s = parseInt(parts[1]) || 0;
+        timerSec = m * 60 + s;
+        refreshTimerUI();
+        broadcast();
+      }
+    }
+
+    function refreshTimerUI() {
+      const t = fmt(timerSec);
+      document.getElementById('timer-big').textContent = t;
+      document.getElementById('timer-set').value = t;
+    }
+
+    function fmt(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    // ── Live toggle ──
+    function toggleLive() {
+      isLive = !isLive;
+      const pill  = document.getElementById('live-pill');
+      const label = document.getElementById('live-pill-label');
+      pill.className  = 'live-pill ' + (isLive ? 'live' : 'offline');
+      label.textContent = isLive ? 'YAYIN AÇIK' : 'YAYIN KAPALI';
+    }
+
+    // ── Keyboard shortcuts ──
+    document.addEventListener('keydown', e => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      switch (e.key) {
+        case 'q': case 'Q': changeScore(1, -1); break;
+        case 'w': case 'W': changeScore(1,  1); break;
+        case 'o': case 'O': changeScore(2, -1); break;
+        case 'p': case 'P': changeScore(2,  1); break;
+        case '[':            changeRound(-1);    break;
+        case ']':            changeRound( 1);    break;
+        case ' ':
+          e.preventDefault();
+          timerRunning ? stopTimer() : startTimer();
+          break;
+      }
+    });
+
+    // ── Init ──
+    broadcast();
+  </script>
+</body>
+</html>

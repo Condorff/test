@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyblade Battle Arena - Display</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --p1: #00d4ff;
+  --p1g: #0055ff;
+  --p2: #ff3333;
+  --p2g: #bb0000;
+  --bg: #06060e;
+  --panel: #08081a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Orbitron', monospace;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ========== HEADER ========== */
+.header {
+  display: flex;
+  align-items: center;
+  height: 88px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #0e0e22 0%, #07071a 100%);
+  border-bottom: 2px solid rgba(0,160,255,0.25);
+  position: relative;
+  z-index: 10;
+  padding: 0 12px;
+  gap: 0;
+}
+
+/* top glow line */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,180,255,0.7) 30%, rgba(255,50,50,0.7) 70%, transparent);
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(160,0,0,0.15);
+  border: 1.5px solid rgba(200,0,0,0.7);
+  border-radius: 4px;
+  padding: 6px 14px;
+  color: #ff4444;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  flex-shrink: 0;
+}
+
+.live-dot {
+  width: 9px;
+  height: 9px;
+  background: #ff1111;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ff0000, 0 0 16px #ff0000;
+  animation: livePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Player 1 side */
+.p1-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 24px;
+  position: relative;
+}
+
+.p1-name {
+  font-size: 40px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 3px;
+  color: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #66eeff 40%, var(--p1) 70%, var(--p1g) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px var(--p1)) drop-shadow(0 0 20px var(--p1g));
+}
+
+/* Score center */
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.6));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 5px 30px 7px;
+  min-width: 220px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.score-box::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 20%; right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1;
+}
+
+.sc1 {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--p1);
+  text-shadow: 0 0 20px var(--p1);
+}
+
+.sc-dash {
+  font-size: 44px;
+  font-weight: 900;
+  color: #ccddee;
+}
+
+.sc2 {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--p2);
+  text-shadow: 0 0 20px var(--p2);
+}
+
+.round-label {
+  font-size: 11px;
+  color: #7799bb;
+  letter-spacing: 5px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* Player 2 side */
+.p2-section {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.p2-name {
+  font-size: 40px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 3px;
+  color: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #ffaaaa 40%, var(--p2) 70%, var(--p2g) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px var(--p2)) drop-shadow(0 0 20px var(--p2g));
+}
+
+/* Buttons */
+.hdr-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.hdr-btn {
+  background: rgba(0,8,2,0.8);
+  border: 1px solid rgba(0,200,80,0.45);
+  color: #00cc66;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Left panel – empty for OBS */
+.panel-left {
+  width: 228px;
+  flex-shrink: 0;
+  background: transparent;
+  position: relative;
+  border-right: 1px solid rgba(0,140,255,0.15);
+}
+
+.panel-left::after {
+  content: '';
+  position: absolute;
+  top: 10%; right: 0;
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(180deg, transparent, rgba(0,200,255,0.5) 50%, transparent);
+}
+
+/* Arena – empty for OBS */
+.arena {
+  flex: 1;
+  background: #000;
+  position: relative;
+}
+
+/* Right panel – empty for OBS */
+.panel-right {
+  width: 228px;
+  flex-shrink: 0;
+  background: transparent;
+  position: relative;
+  border-left: 1px solid rgba(255,50,50,0.15);
+}
+
+.panel-right::before {
+  content: '';
+  position: absolute;
+  top: 10%; left: 0;
+  width: 2px;
+  height: 80%;
+  background: linear-gradient(180deg, transparent, rgba(255,80,80,0.5) 50%, transparent);
+}
+
+/* ========== LIKE & SUBSCRIBE BAR ========== */
+.ls-bar {
+  flex-shrink: 0;
+  height: 104px;
+  background: linear-gradient(180deg, #06060e 0%, #0b0b1e 50%, #06060e 100%);
+  border-top: 1px solid rgba(80,80,255,0.3);
+  border-bottom: 1px solid rgba(80,80,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* animated top border */
+.ls-bar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #0080ff 15%, #8800ff 30%, #ff00aa 45%,
+    #ff6600 60%, #00ff88 75%, #00d4ff 90%,
+    transparent 100%);
+  animation: scanLine 3s linear infinite;
+}
+
+/* animated bottom border */
+.ls-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: -100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    #00d4ff 10%, #00ff88 25%, #ff6600 40%,
+    #ff00aa 55%, #8800ff 70%, #0080ff 85%,
+    transparent 100%);
+  animation: scanLine 3s linear infinite reverse;
+}
+
+@keyframes scanLine {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+.ls-content {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.ls-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.ls-like {
+  animation: neonCycle 5s ease-in-out infinite;
+}
+
+.ls-sub {
+  animation: neonCycle 5s ease-in-out infinite 2.5s;
+}
+
+@keyframes neonCycle {
+  0%   { color: #00d4ff; text-shadow: 0 0 8px #00d4ff, 0 0 20px #0080ff, 0 0 50px #0040ff; }
+  16%  { color: #ff00ff; text-shadow: 0 0 8px #ff00ff, 0 0 20px #cc00cc, 0 0 50px #880088; }
+  33%  { color: #ff6600; text-shadow: 0 0 8px #ff6600, 0 0 20px #cc4400, 0 0 50px #882200; }
+  50%  { color: #00ff88; text-shadow: 0 0 8px #00ff88, 0 0 20px #00cc66, 0 0 50px #008844; }
+  66%  { color: #ffff00; text-shadow: 0 0 8px #ffff00, 0 0 20px #cccc00, 0 0 50px #888800; }
+  83%  { color: #ff3366; text-shadow: 0 0 8px #ff3366, 0 0 20px #cc0044, 0 0 50px #880022; }
+  100% { color: #00d4ff; text-shadow: 0 0 8px #00d4ff, 0 0 20px #0080ff, 0 0 50px #0040ff; }
+}
+
+.ls-icon {
+  font-size: 28px;
+  animation: iconBounce 1.5s ease-in-out infinite;
+}
+
+.ls-icon-sub {
+  animation: iconBounce 1.5s ease-in-out infinite 0.75s;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.ls-divider {
+  width: 2px;
+  height: 54px;
+  background: linear-gradient(180deg, transparent, rgba(200,200,255,0.8), transparent);
+  animation: divPulse 2s ease-in-out infinite;
+}
+
+@keyframes divPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; box-shadow: 0 0 12px #8888ff; }
+}
+
+/* decorative /// marks */
+.ls-deco {
+  font-size: 13px;
+  color: rgba(100,100,200,0.5);
+  letter-spacing: 2px;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  height: 42px;
+  background: #000;
+  border-top: 1px solid rgba(0,100,255,0.35);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.footer-timer {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #88bbdd;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 1px;
+}
+
+.footer-timer-icon { font-size: 14px; }
+
+.footer-brand {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  display: flex;
+  gap: 6px;
+}
+
+.fb-b { color: var(--p1); text-shadow: 0 0 8px var(--p1); }
+.fb-a { color: var(--p2); text-shadow: 0 0 8px var(--p2); }
+.fb-r { color: #ffffff; }
+
+.footer-stats {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #7799aa;
+}
+
+.footer-stat { display: flex; align-items: center; gap: 5px; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    LIVE
+  </div>
+
+  <div class="p1-section">
+    <div class="p1-name" id="p1Name">MESSI</div>
+  </div>
+
+  <div class="score-box">
+    <div class="score-row">
+      <span class="sc1" id="score1">2</span>
+      <span class="sc-dash">-</span>
+      <span class="sc2" id="score2">1</span>
+    </div>
+    <div class="round-label">ROUND <span id="roundNum">4</span></div>
+  </div>
+
+  <div class="p2-section">
+    <div class="p2-name" id="p2Name">RONALDO</div>
+  </div>
+
+  <div class="hdr-btns">
+    <div class="hdr-btn">🎙️ &nbsp;NO COMMENTARY</div>
+    <div class="hdr-btn">🎵 &nbsp;SOUND + RGB FOCUS</div>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main">
+  <div class="panel-left"></div>
+  <div class="arena"></div>
+  <div class="panel-right"></div>
+</div>
+
+<!-- ===== LIKE & SUBSCRIBE ===== -->
+<div class="ls-bar">
+  <div class="ls-content">
+    <span class="ls-deco">///</span>
+
+    <div class="ls-item ls-like">
+      <span class="ls-icon">👍</span>
+      LIKE
+    </div>
+
+    <div class="ls-divider"></div>
+
+    <div class="ls-item ls-sub">
+      SUBSCRIBE
+      <span class="ls-icon ls-icon-sub">🔔</span>
+    </div>
+
+    <span class="ls-deco">///</span>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <div class="footer-timer">
+    <span class="footer-timer-icon">⏱</span>
+    <span id="timerDisplay">06:39</span>
+  </div>
+
+  <div class="footer-brand">
+    <span class="fb-b">BEYBLADE</span>
+    <span class="fb-a">BATTLE</span>
+    <span class="fb-r">ARENA</span>
+  </div>
+
+  <div class="footer-stats">
+    <div class="footer-stat">👥 <span id="viewerCount">2.9B</span></div>
+    <div class="footer-stat">👍 <span id="likeCount">4.7B</span></div>
+  </div>
+</div>
+
+<script>
+  const STORE_KEY = 'bba_state';
+
+  function applyState(s) {
+    if (!s) return;
+    setText('p1Name',      s.p1Name);
+    setText('p2Name',      s.p2Name);
+    setText('score1',      s.score1);
+    setText('score2',      s.score2);
+    setText('roundNum',    s.roundNum);
+    setText('viewerCount', s.viewers);
+    setText('likeCount',   s.likes);
+  }
+
+  function setText(id, val) {
+    if (val === undefined || val === null || val === '') return;
+    document.getElementById(id).textContent = val;
+  }
+
+  // Load initial state
+  applyState(JSON.parse(localStorage.getItem(STORE_KEY) || 'null'));
+
+  // Sync across tabs
+  window.addEventListener('storage', e => {
+    if (e.key === STORE_KEY) applyState(JSON.parse(e.newValue || 'null'));
+  });
+
+  // Timer (counts up or holds; control page sets timerSeconds + timerRunning)
+  let timerSec  = 6 * 60 + 39;
+  let timerOn   = false;
+  let lastSync  = Date.now();
+
+  function refreshTimer() {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.timerSeconds !== undefined) timerSec = +s.timerSeconds;
+    timerOn = !!s.timerRunning;
+  }
+
+  refreshTimer();
+
+  setInterval(() => {
+    refreshTimer();
+    if (timerOn) timerSec = Math.max(0, timerSec - 1);
+    const m = Math.floor(timerSec / 60).toString().padStart(2,'0');
+    const sec = (timerSec % 60).toString().padStart(2,'0');
+    document.getElementById('timerDisplay').textContent = m + ':' + sec;
+  }, 1000);
+</script>
+</body>
+</html>

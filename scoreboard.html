@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyblade Battle Arena — Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+.overlay {
+  width: 100%; height: 100%;
+  position: relative;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+/* =========================================
+   NEON BORDER STRIPS (left=cyan, right=red)
+   ========================================= */
+.nb {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 7px;
+  z-index: 50;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%, black 6%, black 94%, transparent 100%);
+  mask-image: linear-gradient(to bottom,
+    transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+.nb-left {
+  left: 0;
+  background: #00d4ff;
+  box-shadow:
+    0 0 5px  #00d4ff,
+    0 0 14px #00aaff,
+    0 0 32px #0077ff,
+    0 0 65px rgba(0, 80, 255, 0.45),
+    18px 0 55px rgba(0, 140, 255, 0.12);
+}
+
+.nb-right {
+  right: 0;
+  background: #ff4400;
+  box-shadow:
+    0 0 5px  #ff4400,
+    0 0 14px #ff2200,
+    0 0 32px #cc1100,
+    0 0 65px rgba(220, 30, 0, 0.45),
+    -18px 0 55px rgba(200, 50, 0, 0.12);
+}
+
+/* =========================================
+   TOP SECTION
+   ========================================= */
+.top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 2vw 3vw 2.8vw;
+  background: linear-gradient(180deg,
+    rgba(4, 6, 20, 0.98) 0%,
+    rgba(6, 8, 26, 0.94) 58%,
+    rgba(6, 8, 26, 0.72) 85%,
+    transparent 100%
+  );
+}
+
+/* — Row 1: LIVE + OPTIONS ————————————— */
+.row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.8vw;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75vw;
+  background: rgba(0,0,0,0.68);
+  border: 1.5px solid #3a3a50;
+  padding: 0.55vw 1.4vw;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.85vw;
+  letter-spacing: 0.3vw;
+}
+
+.live-dot {
+  width: 1.05vw; height: 1.05vw;
+  border-radius: 50%;
+  background: #ff1111;
+  box-shadow: 0 0 6px #ff1111, 0 0 13px #ff0000;
+  animation: livePulse 1.3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes livePulse {
+  0%,100% { opacity: 1;   box-shadow: 0 0 6px #ff1111, 0 0 14px #ff0000; }
+  50%      { opacity: 0.3; box-shadow: 0 0 2px #ff1111; }
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6vw;
+  align-items: flex-end;
+}
+
+.opt-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65vw;
+  background: rgba(0,0,0,0.72);
+  border: 1.5px solid #252535;
+  padding: 0.48vw 1.1vw;
+  border-radius: 3px;
+  color: #50536a;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 1.25vw;
+  letter-spacing: 0.14vw;
+  transition: color .25s, border-color .25s, box-shadow .25s;
+}
+
+.opt-btn.active {
+  color: #00ff88;
+  border-color: rgba(0, 255, 136, 0.55);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.18);
+}
+
+.opt-icon { opacity: 0.85; }
+
+/* — Row 2: PLAYER NAMES + SCORE ————————— */
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1vw;
+}
+
+.pname-wrap        { flex: 1; display: flex; }
+.pname-wrap.side-l { justify-content: flex-end; }
+.pname-wrap.side-r { justify-content: flex-start; }
+
+.pname {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 5.3vw;
+  letter-spacing: 0.3vw;
+  padding: 0.65vw 2vw;
+  display: inline-block;
+}
+
+.pname.p1 {
+  color: #00d8ff;
+  background: linear-gradient(112deg, rgba(0,65,140,0.52) 0%, rgba(0,25,80,0.3) 100%);
+  border: 1.5px solid rgba(0, 175, 255, 0.48);
+  text-shadow: 0 0 18px rgba(0,200,255,0.75), 0 0 38px rgba(0,110,255,0.4);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 13px) 100%, 0 100%);
+  padding-right: 2.6vw;
+}
+
+.pname.p2 {
+  color: #ff5533;
+  background: linear-gradient(68deg, rgba(80,10,0,0.32) 0%, rgba(130,20,0,0.52) 100%);
+  border: 1.5px solid rgba(255, 75, 40, 0.48);
+  text-shadow: 0 0 18px rgba(255,80,40,0.75), 0 0 38px rgba(255,30,0,0.4);
+  clip-path: polygon(13px 0, 100% 0, 100% 100%, 0 100%);
+  padding-left: 2.6vw;
+}
+
+.score-box {
+  background: rgba(4, 6, 20, 0.93);
+  border: 2px solid #30304a;
+  padding: 0.45vw 1.8vw;
+  text-align: center;
+  min-width: 14.5vw;
+  flex-shrink: 0;
+  position: relative;
+}
+.score-box::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(140deg, rgba(255,255,255,0.025) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 7.5vw;
+  color: #fff;
+  letter-spacing: 0.55vw;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(255,255,255,0.22);
+}
+
+/* — Row 3: ROUND ————————————————————— */
+.round-row { display: flex; justify-content: center; }
+
+.round-tag {
+  background: rgba(10, 12, 30, 0.95);
+  border: 1.5px solid #2c2c46;
+  padding: 0.5vw 2.4vw;
+  color: #8891aa;
+  font-size: 1.45vw;
+  font-weight: 600;
+  letter-spacing: 0.45vw;
+}
+
+/* =========================================
+   BOTTOM SECTION
+   ========================================= */
+.bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(0deg,
+    rgba(4, 6, 20, 0.98) 0%,
+    rgba(6, 8, 26, 0.95) 58%,
+    rgba(6, 8, 26, 0.72) 90%,
+    transparent 100%
+  );
+}
+
+/* — LIKE & SUBSCRIBE ————————————————— */
+.likesub {
+  padding: 3.2vw 4vw 2.2vw;
+  text-align: center;
+  border-top: 1px solid rgba(38, 42, 68, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+/* shimmer sweep */
+.likesub::before {
+  content: '';
+  position: absolute; top: 0; bottom: 0;
+  left: -60%; width: 38%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.035), transparent);
+  animation: shimmer 6s ease-in-out infinite 1s;
+  pointer-events: none;
+}
+@keyframes shimmer { from { left: -60%; } to { left: 160%; } }
+
+.deco-rule {
+  display: flex;
+  align-items: center;
+  gap: 1.2vw;
+  justify-content: center;
+  margin-bottom: 1.6vw;
+  color: #38405a;
+  font-size: 1.2vw;
+  letter-spacing: 0.55vw;
+}
+.deco-rule span {
+  flex: 1;
+  height: 1px;
+  max-width: 28%;
+  background: linear-gradient(to right, transparent, #38405a 40%, #38405a 60%, transparent);
+}
+
+.ls-text {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 4.3vw;
+  letter-spacing: 0.45vw;
+  display: inline-block;
+  animation: neonCycle 6s ease-in-out infinite;
+}
+
+@keyframes neonCycle {
+  0%   { color:#00ffff; text-shadow:0 0 10px #00ffff,0 0 28px #00ffff,0 0 60px #00aaff,0 0 110px rgba(0,150,255,0.5); }
+  17%  { color:#ff00ff; text-shadow:0 0 10px #ff00ff,0 0 28px #ff00ff,0 0 60px #cc00cc,0 0 110px rgba(200,0,200,0.5); }
+  34%  { color:#ffff00; text-shadow:0 0 10px #ffff00,0 0 28px #ffff00,0 0 60px #ffaa00,0 0 110px rgba(255,180,0,0.5); }
+  50%  { color:#00ff88; text-shadow:0 0 10px #00ff88,0 0 28px #00ff88,0 0 60px #00cc66,0 0 110px rgba(0,180,100,0.5); }
+  67%  { color:#ff6633; text-shadow:0 0 10px #ff6633,0 0 28px #ff6633,0 0 60px #ff3300,0 0 110px rgba(255,80,0,0.5); }
+  84%  { color:#88aaff; text-shadow:0 0 10px #88aaff,0 0 28px #88aaff,0 0 60px #4466ff,0 0 110px rgba(100,120,255,0.5); }
+  100% { color:#00ffff; text-shadow:0 0 10px #00ffff,0 0 28px #00ffff,0 0 60px #00aaff,0 0 110px rgba(0,150,255,0.5); }
+}
+
+.ls-sub {
+  color: #3d4460;
+  font-size: 1.3vw;
+  letter-spacing: 0.42vw;
+  margin-top: 0.9vw;
+  font-weight: 600;
+}
+
+/* — STATUS BAR —————————————————————— */
+.statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vw 2.8vw;
+  background: rgba(2, 3, 12, 0.97);
+  border-top: 1px solid #13142a;
+}
+
+.sb-clock {
+  display: flex;
+  align-items: center;
+  gap: 0.7vw;
+  color: #636880;
+  font-size: 1.85vw;
+  font-weight: 600;
+}
+
+.clock-svg { flex-shrink: 0; }
+
+.brand {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6vw;
+  font-weight: 700;
+  letter-spacing: 0.42vw;
+}
+.brand-b  { color: #0099dd; }
+.brand-ba { color: #c8cce0; }
+.brand-a  { color: #dd3322; }
+
+.sb-stats {
+  display: flex;
+  gap: 1.6vw;
+  color: #636880;
+  font-size: 1.85vw;
+  font-weight: 600;
+}
+.stat { display: flex; align-items: center; gap: 0.45vw; }
+</style>
+</head>
+<body>
+<div class="overlay">
+
+  <!-- NEON BORDERS -->
+  <div class="nb nb-left"></div>
+  <div class="nb nb-right"></div>
+
+  <!-- ===== TOP SECTION ===== -->
+  <div class="top">
+
+    <!-- Row 1: LIVE badge + option buttons -->
+    <div class="row-top">
+      <div class="live-badge">
+        <span class="live-dot" id="live-dot"></span>LIVE
+      </div>
+      <div class="options">
+        <div class="opt-btn" id="opt-commentary">
+          <span class="opt-icon">⊘</span> NO COMMENTARY
+        </div>
+        <div class="opt-btn active" id="opt-sound">
+          <span class="opt-icon">≋</span> SOUND + RGB FOCUS
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Player 1 | Score | Player 2 -->
+    <div class="score-row">
+      <div class="pname-wrap side-l">
+        <div class="pname p1" id="p1-name">MESSI</div>
+      </div>
+      <div class="score-box">
+        <div class="score">
+          <span id="score1">2</span>&thinsp;-&thinsp;<span id="score2">1</span>
+        </div>
+      </div>
+      <div class="pname-wrap side-r">
+        <div class="pname p2" id="p2-name">RONALDO</div>
+      </div>
+    </div>
+
+    <!-- Row 3: Round badge -->
+    <div class="round-row">
+      <div class="round-tag">ROUND&ensp;<span id="round-num">4</span></div>
+    </div>
+
+  </div><!-- /top -->
+
+  <!-- ===== BOTTOM SECTION ===== -->
+  <div class="bottom">
+
+    <!-- Like & Subscribe animated band -->
+    <div class="likesub">
+      <div class="deco-rule"><span></span>✦&ensp;✦&ensp;✦<span></span></div>
+      <div class="ls-text">👍&ensp;LIKE &amp; SUBSCRIBE&ensp;🔔</div>
+      <div class="ls-sub">BEĞEN · ABONE OL · BİLDİRİMLERİ AÇ</div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="statusbar">
+      <div class="sb-clock">
+        <svg class="clock-svg" width="1.5vw" height="1.5vw" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 15.5"/>
+        </svg>
+        <span id="clock-display">06:39</span>
+      </div>
+
+      <div class="brand">
+        <span class="brand-b">BEYBLADE</span>
+        <span class="brand-ba">&ensp;BATTLE&ensp;</span>
+        <span class="brand-a">ARENA</span>
+      </div>
+
+      <div class="sb-stats">
+        <div class="stat">
+          <svg width="1.45vw" height="1.45vw" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3
+            3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34
+            5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33
+            -4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97
+            1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          </svg>
+          <span id="viewer-count">2.9B</span>
+        </div>
+        <div class="stat">
+          <svg width="1.45vw" height="1.45vw" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57
+            .03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95
+            7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02
+            -7.05c.09-.23.14-.47.14-.73v-2z"/>
+          </svg>
+          <span id="like-count">4.7B</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /bottom -->
+
+</div><!-- /overlay -->
+
+<script>
+  // Apply a data object to the overlay DOM
+  function applyData(d) {
+    if (!d) return;
+    const el = id => document.getElementById(id);
+
+    if (d.p1Name    !== undefined) el('p1-name').textContent      = d.p1Name;
+    if (d.p2Name    !== undefined) el('p2-name').textContent      = d.p2Name;
+    if (d.score1    !== undefined) el('score1').textContent       = d.score1;
+    if (d.score2    !== undefined) el('score2').textContent       = d.score2;
+    if (d.round     !== undefined) el('round-num').textContent    = d.round;
+    if (d.clock     !== undefined) el('clock-display').textContent= d.clock;
+    if (d.viewers   !== undefined) el('viewer-count').textContent = d.viewers;
+    if (d.likes     !== undefined) el('like-count').textContent   = d.likes;
+
+    if (d.isLive !== undefined) {
+      const dot = el('live-dot');
+      dot.style.background         = d.isLive ? '#ff1111' : '#444';
+      dot.style.boxShadow          = d.isLive ? '0 0 6px #ff1111,0 0 13px #ff0000' : 'none';
+      dot.style.animationPlayState = d.isLive ? 'running' : 'paused';
+    }
+
+    if (d.noCommentary !== undefined)
+      el('opt-commentary').classList.toggle('active', d.noCommentary);
+    if (d.soundFocus !== undefined)
+      el('opt-sound').classList.toggle('active', d.soundFocus);
+  }
+
+  // Real-time updates via BroadcastChannel (same browser, any tab)
+  const ch = new BroadcastChannel('bba-channel');
+  ch.onmessage = e => applyData(e.data);
+
+  // Fallback: storage event (different windows/OBS same-origin)
+  window.addEventListener('storage', e => {
+    if (e.key === 'bba-data' && e.newValue) applyData(JSON.parse(e.newValue));
+  });
+
+  // Load persisted data on first open
+  const saved = localStorage.getItem('bba-data');
+  if (saved) applyData(JSON.parse(saved));
+</script>
+</body>
+</html>

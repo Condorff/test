@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBA — Kontrol Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #06091a;
+  --surface:  #0e1228;
+  --border:   #1e2240;
+  --muted:    #555878;
+  --text:     #b8bdd8;
+  --blue:     #00d4ff;
+  --red:      #ff5533;
+  --green:    #00ff88;
+  --yellow:   #ffd644;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  padding: 24px 20px 40px;
+  font-size: 16px;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 22px;
+  letter-spacing: 6px;
+  color: var(--blue);
+  text-shadow: 0 0 18px rgba(0,200,255,0.45);
+  margin-bottom: 6px;
+}
+
+.page-sub {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 3px;
+}
+
+/* ===== GRID LAYOUT ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.full { grid-column: 1 / -1; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card.p1 { border-color: rgba(0, 200, 255, 0.3); }
+.card.p1 .card-title { color: var(--blue); }
+
+.card.p2 { border-color: rgba(255, 80, 50, 0.3); }
+.card.p2 .card-title { color: var(--red); }
+
+/* ===== FORM ELEMENTS ===== */
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+label + label { margin-top: 14px; }
+
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  background: rgba(0,0,0,0.45);
+  border: 1.5px solid #252840;
+  border-radius: 5px;
+  color: #fff;
+  padding: 10px 13px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.18);
+}
+
+/* ===== SCORE ROW ===== */
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-row input { text-align: center; flex: 1; }
+
+.btn-pm {
+  width: 40px; height: 40px;
+  background: rgba(0,0,0,0.45);
+  border: 1.5px solid #252840;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.btn-pm:hover     { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.08); }
+.btn-pm.sub:hover { border-color: var(--red);   color: var(--red);   background: rgba(255,80,50,0.08); }
+.btn-pm:active    { transform: scale(0.93); }
+
+/* ===== TOGGLE BUTTONS ===== */
+.toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tog {
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.4);
+  border: 1.5px solid #252840;
+  border-radius: 5px;
+  color: var(--muted);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  cursor: pointer;
+  transition: all .2s;
+  user-select: none;
+}
+
+.tog:hover { border-color: #404468; color: var(--text); }
+
+.tog.active-green {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0,255,136,0.55);
+  color: var(--green);
+  box-shadow: 0 0 10px rgba(0,255,136,0.15);
+}
+
+.tog.active-red {
+  background: rgba(255, 30, 30, 0.12);
+  border-color: rgba(255, 30, 30, 0.55);
+  color: #ff4444;
+  box-shadow: 0 0 10px rgba(255,0,0,0.15);
+}
+
+.tog.active-yellow {
+  background: rgba(255, 214, 68, 0.1);
+  border-color: rgba(255,214,68,0.55);
+  color: var(--yellow);
+  box-shadow: 0 0 10px rgba(255,214,68,0.15);
+}
+
+/* ===== TIMER ===== */
+.timer-display {
+  font-family: 'Orbitron', monospace;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 4px;
+  padding: 12px 0 16px;
+  text-shadow: 0 0 12px rgba(0,200,255,0.3);
+}
+
+.timer-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-timer {
+  padding: 9px 20px;
+  border-radius: 5px;
+  border: 1.5px solid;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-timer:active { transform: scale(0.95); }
+
+.btn-start  { border-color: var(--green);  color: var(--green);  background: rgba(0,255,136,0.08); }
+.btn-pause  { border-color: var(--yellow); color: var(--yellow); background: rgba(255,214,68,0.08); }
+.btn-reset  { border-color: var(--muted);  color: var(--muted);  background: rgba(0,0,0,0.3); }
+.btn-timer:hover { filter: brightness(1.2); }
+
+/* manual clock input */
+.or-divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 3px;
+  margin: 12px 0 10px;
+}
+
+/* ===== SEND BUTTON ===== */
+.btn-send {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(0,140,255,0.18), rgba(0,60,200,0.1));
+  border: 1.5px solid rgba(0, 180, 255, 0.6);
+  border-radius: 7px;
+  color: var(--blue);
+  font-family: 'Orbitron', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all .2s;
+  text-transform: uppercase;
+}
+
+.btn-send:hover {
+  background: linear-gradient(135deg, rgba(0,200,255,0.22), rgba(0,100,255,0.15));
+  box-shadow: 0 0 22px rgba(0, 170, 255, 0.3);
+}
+.btn-send:active { transform: scale(0.98); }
+
+/* ===== TOAST ===== */
+.toast {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--green);
+  height: 22px;
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .3s, transform .3s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ===== PREVIEW LINK ===== */
+.preview-bar {
+  text-align: center;
+  margin-top: 28px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.preview-bar p { color: var(--muted); font-size: 12px; letter-spacing: 2px; margin-bottom: 8px; }
+.preview-bar a {
+  color: var(--blue);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+.preview-bar a:hover { text-decoration: underline; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .full { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="page-title">⚔&ensp;BBA CONTROL PANEL&ensp;⚔</div>
+  <div class="page-sub">Overlay'i anlık olarak düzenle · BEYBLADE BATTLE ARENA</div>
+</div>
+
+<div class="grid">
+
+  <!-- ===== PLAYER 1 ===== -->
+  <div class="card p1">
+    <div class="card-title">🔵 Player 1 — Mavi</div>
+    <div class="field">
+      <label>İsim</label>
+      <input type="text" id="p1-name" value="MESSI" placeholder="Player 1 adı">
+    </div>
+    <div class="field">
+      <label>Skor</label>
+      <div class="score-row">
+        <button class="btn-pm sub" onclick="changeScore('s1', -1)">−</button>
+        <input type="number" id="s1" value="2" min="0" max="99">
+        <button class="btn-pm" onclick="changeScore('s1', +1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PLAYER 2 ===== -->
+  <div class="card p2">
+    <div class="card-title">🔴 Player 2 — Kırmızı</div>
+    <div class="field">
+      <label>İsim</label>
+      <input type="text" id="p2-name" value="RONALDO" placeholder="Player 2 adı">
+    </div>
+    <div class="field">
+      <label>Skor</label>
+      <div class="score-row">
+        <button class="btn-pm sub" onclick="changeScore('s2', -1)">−</button>
+        <input type="number" id="s2" value="1" min="0" max="99">
+        <button class="btn-pm" onclick="changeScore('s2', +1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MAÇ BİLGİSİ ===== -->
+  <div class="card">
+    <div class="card-title">📋 Maç Bilgisi</div>
+    <div class="field">
+      <label>Round Numarası</label>
+      <input type="number" id="round-num" value="4" min="1" max="99">
+    </div>
+    <div class="field">
+      <label>İzleyici Sayısı</label>
+      <input type="text" id="viewers" value="2.9B" placeholder="örn: 2.9B">
+    </div>
+    <div class="field">
+      <label>Beğeni Sayısı</label>
+      <input type="text" id="likes" value="4.7B" placeholder="örn: 4.7B">
+    </div>
+  </div>
+
+  <!-- ===== ZAMANLAYICI ===== -->
+  <div class="card">
+    <div class="card-title">⏱ Süre / Saat</div>
+    <div class="timer-display" id="timer-disp">00:00</div>
+    <div class="timer-row">
+      <button class="btn-timer btn-start" onclick="timerStart()">▶ BAŞLAT</button>
+      <button class="btn-timer btn-pause" onclick="timerPause()">⏸ DURDUR</button>
+      <button class="btn-timer btn-reset" onclick="timerReset()">↺ SIFIRLA</button>
+    </div>
+    <div class="or-divider">— ya da manuel gir —</div>
+    <input type="text" id="clock-manual" placeholder="06:39" oninput="pushUpdate()">
+  </div>
+
+  <!-- ===== DURUM TOGGLELAR ===== -->
+  <div class="card full">
+    <div class="card-title">🎛 Yayın Durumu</div>
+    <div class="toggle-group">
+      <div class="tog active-red" id="tog-live"        onclick="toggle('live')">🔴 CANLI</div>
+      <div class="tog"            id="tog-commentary"  onclick="toggle('commentary')">⊘ NO COMMENTARY</div>
+      <div class="tog active-green" id="tog-sound"     onclick="toggle('sound')">≋ SOUND + RGB FOCUS</div>
+    </div>
+  </div>
+
+  <!-- ===== YAYINLA BUTONU ===== -->
+  <div class="full">
+    <button class="btn-send" onclick="pushUpdate()">🚀 &ensp; YAYINLA / GÜNCELLE</button>
+    <div class="toast" id="toast">✓ &ensp; Overlay güncellendi!</div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- Overlay link -->
+<div class="preview-bar">
+  <p>OBS BROWSER SOURCE — OVERLAY DOSYASI</p>
+  <a href="scoreboard.html" target="_blank">→ scoreboard.html dosyasını aç / önizle</a>
+</div>
+
+<script>
+  /* ---- State ---- */
+  const state = {
+    isLive:        true,
+    noCommentary:  false,
+    soundFocus:    true,
+  };
+
+  /* ---- Toggle buttons ---- */
+  function toggle(key) {
+    if (key === 'live') {
+      state.isLive = !state.isLive;
+      const btn = document.getElementById('tog-live');
+      btn.textContent = state.isLive ? '🔴 CANLI' : '⚫ YAYINDA DEĞİL';
+      btn.className   = 'tog ' + (state.isLive ? 'active-red' : '');
+    }
+    if (key === 'commentary') {
+      state.noCommentary = !state.noCommentary;
+      document.getElementById('tog-commentary').className =
+        'tog ' + (state.noCommentary ? 'active-green' : '');
+    }
+    if (key === 'sound') {
+      state.soundFocus = !state.soundFocus;
+      document.getElementById('tog-sound').className =
+        'tog ' + (state.soundFocus ? 'active-green' : '');
+    }
+    pushUpdate();
+  }
+
+  /* ---- Score buttons ---- */
+  function changeScore(id, delta) {
+    const inp = document.getElementById(id);
+    inp.value = Math.max(0, (parseInt(inp.value) || 0) + delta);
+    pushUpdate();
+  }
+
+  /* ---- Timer ---- */
+  let timerSec = 0, timerRunning = false, timerInterval = null;
+
+  function timerStart() {
+    if (timerRunning) return;
+    timerRunning = true;
+    timerInterval = setInterval(() => {
+      timerSec++;
+      updateTimerDisplay();
+      pushUpdate();
+    }, 1000);
+  }
+
+  function timerPause() {
+    timerRunning = false;
+    clearInterval(timerInterval);
+  }
+
+  function timerReset() {
+    timerPause();
+    timerSec = 0;
+    updateTimerDisplay();
+    pushUpdate();
+  }
+
+  function updateTimerDisplay() {
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer-disp').textContent = m + ':' + s;
+  }
+
+  function getClockValue() {
+    // Timer display takes priority; if manual input is non-empty use it
+    const manual = document.getElementById('clock-manual').value.trim();
+    return manual || document.getElementById('timer-disp').textContent;
+  }
+
+  /* ---- Broadcast & persist ---- */
+  const ch = new BroadcastChannel('bba-channel');
+
+  function pushUpdate() {
+    const data = {
+      p1Name:       (document.getElementById('p1-name').value   || 'PLAYER 1').toUpperCase(),
+      p2Name:       (document.getElementById('p2-name').value   || 'PLAYER 2').toUpperCase(),
+      score1:        document.getElementById('s1').value,
+      score2:        document.getElementById('s2').value,
+      round:         document.getElementById('round-num').value,
+      clock:         getClockValue(),
+      viewers:       document.getElementById('viewers').value   || '—',
+      likes:         document.getElementById('likes').value     || '—',
+      isLive:        state.isLive,
+      noCommentary:  state.noCommentary,
+      soundFocus:    state.soundFocus,
+    };
+
+    localStorage.setItem('bba-data', JSON.stringify(data));
+    ch.postMessage(data);
+    showToast();
+  }
+
+  /* ---- Toast ---- */
+  let toastTimer = null;
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  /* ---- Auto-push on any input change ---- */
+  document.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      if (inp.id !== 'clock-manual') pushUpdate();
+    });
+  });
+
+  /* ---- Load persisted data on startup ---- */
+  const saved = localStorage.getItem('bba-data');
+  if (saved) {
+    const d = JSON.parse(saved);
+    const set = (id, val) => { const e = document.getElementById(id); if (e && val !== undefined) e.value = val; };
+
+    set('p1-name',   d.p1Name);
+    set('p2-name',   d.p2Name);
+    set('s1',        d.score1);
+    set('s2',        d.score2);
+    set('round-num', d.round);
+    set('viewers',   d.viewers);
+    set('likes',     d.likes);
+
+    if (d.isLive !== undefined) {
+      state.isLive = d.isLive;
+      const btn = document.getElementById('tog-live');
+      btn.textContent = state.isLive ? '🔴 CANLI' : '⚫ YAYINDA DEĞİL';
+      btn.className   = 'tog ' + (state.isLive ? 'active-red' : '');
+    }
+    if (d.noCommentary !== undefined) {
+      state.noCommentary = d.noCommentary;
+      document.getElementById('tog-commentary').className =
+        'tog ' + (state.noCommentary ? 'active-green' : '');
+    }
+    if (d.soundFocus !== undefined) {
+      state.soundFocus = d.soundFocus;
+      document.getElementById('tog-sound').className =
+        'tog ' + (state.soundFocus ? 'active-green' : '');
+    }
+  }
+
+  // Initial broadcast so overlay syncs immediately
+  pushUpdate();
+</script>
+</body>
+</html>

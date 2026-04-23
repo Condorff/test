@@ -431,6 +431,20 @@ input.p2-input:focus { border-color: rgba(255,80,80,0.7) !important; }
     </div>
   </div>
 
+  <!-- OBS LINK -->
+  <div class="card">
+    <div class="card-title">OBS Browser Source</div>
+    <div style="font-size:12px;color:#556677;letter-spacing:1px;margin-bottom:10px;line-height:1.6">
+      OBS'de ekle: <strong style="color:#7799aa">index.html?obs</strong><br>
+      Boyut: <strong style="color:#7799aa">1080 × 1920</strong> &nbsp;|&nbsp; ✅ Allow transparency
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-info" onclick="copyOBSLink()">📋 OBS Linkini Kopyala</button>
+      <button class="btn btn-primary" onclick="openPreview()">👁 Önizle</button>
+    </div>
+    <div class="save-notice" id="obsNotice" style="margin-top:8px">✓ Link kopyalandı!</div>
+  </div>
+
   <!-- PUBLISH -->
   <div class="card full">
     <div class="card-title"><span class="status-dot"></span>Yayınla</div>
@@ -597,6 +611,19 @@ input.p2-input:focus { border-color: rgba(255,80,80,0.7) !important; }
 
   function saveState() {
     localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  function copyOBSLink() {
+    const url = location.href.replace('control.html', 'index.html') + '?obs';
+    navigator.clipboard.writeText(url).catch(() => {});
+    const n = document.getElementById('obsNotice');
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 2500);
+  }
+
+  function openPreview() {
+    const url = location.href.replace('control.html', 'index.html');
+    window.open(url, '_blank');
   }
 
   initUI();

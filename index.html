@@ -22,7 +22,7 @@
 html, body {
   width:  1080px;
   height: 1920px;
-  background: transparent;          /* OBS composites camera behind */
+  background: #06060e;
   color: #fff;
   font-family: 'Orbitron', monospace;
   overflow: hidden;
@@ -235,7 +235,7 @@ html, body {
 .panel-left {
   width: 108px;
   flex-shrink: 0;
-  background: transparent;
+  background: rgba(0,4,20,0.55);
   position: relative;
   border-right: 1px solid rgba(0,140,255,0.18);
 }
@@ -265,18 +265,53 @@ html, body {
   border-right: 2px solid rgba(0,200,255,0.45);
 }
 
-/* ── Arena center (OBS camera behind) ── */
+/* ── Arena center ── */
 .arena {
   flex: 1;
-  background: transparent;
+  background: #040410;
   position: relative;
+}
+
+/* corner bracket – top-left */
+.arena::before {
+  content: '';
+  position: absolute;
+  top: 24px; left: 18px;
+  width: 52px; height: 52px;
+  border-top: 2px solid rgba(0,180,255,0.35);
+  border-left: 2px solid rgba(0,180,255,0.35);
+  pointer-events: none;
+}
+
+/* corner bracket – bottom-right */
+.arena::after {
+  content: '';
+  position: absolute;
+  bottom: 24px; right: 18px;
+  width: 52px; height: 52px;
+  border-bottom: 2px solid rgba(255,70,70,0.35);
+  border-right: 2px solid rgba(255,70,70,0.35);
+  pointer-events: none;
+}
+
+.arena-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: rgba(80,100,130,0.4);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* ── Right panel (OBS source) ── */
 .panel-right {
   width: 108px;
   flex-shrink: 0;
-  background: transparent;
+  background: rgba(20,4,0,0.55);
   position: relative;
   border-left: 1px solid rgba(255,50,50,0.18);
 }
@@ -514,10 +549,12 @@ html, body {
     </div>
   </div>
 
-  <!-- ===== MAIN (transparent – OBS composites behind) ===== -->
+  <!-- ===== MAIN ===== -->
   <div class="main">
     <div class="panel-left"></div>
-    <div class="arena"></div>
+    <div class="arena">
+      <div class="arena-label">📷 KAMERA</div>
+    </div>
     <div class="panel-right"></div>
   </div>
 
@@ -571,6 +608,17 @@ html, body {
   function set(id, val) {
     if (val === undefined || val === null || val === '') return;
     document.getElementById(id).textContent = val;
+  }
+
+  // OBS transparent mode: add ?obs to URL for use as OBS Browser Source
+  // Default is dark background (browser preview). ?obs makes center transparent.
+  if (new URLSearchParams(location.search).has('obs')) {
+    document.documentElement.style.background = 'transparent';
+    document.body.style.background = 'transparent';
+    document.querySelector('.arena').style.background = 'transparent';
+    document.querySelector('.panel-left').style.background = 'transparent';
+    document.querySelector('.panel-right').style.background = 'transparent';
+    document.querySelector('.arena-label').style.display = 'none';
   }
 
   applyState(JSON.parse(localStorage.getItem(KEY) || 'null'));
